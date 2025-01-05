@@ -1,0 +1,3 @@
+Give the necessary permisiion to run the script that is 
+$chmod +x script.sh" 
+or it wont run ...
