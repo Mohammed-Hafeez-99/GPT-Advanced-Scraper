@@ -34,11 +34,29 @@ install_chrome() {
     read answer
     if [[ "$answer" == "y" ]]; then
         echo "Installing Google Chrome..."
+        # Set up cleanup trap
+        trap 'rm -f google-chrome.deb' EXIT
+
         # Download and install Google Chrome (for Debian-based systems)
-        wget -q -O google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        if ! wget -q -O google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb; then
+            echo "Error: Failed to download Chrome package"
+            exit 1
+        fi
+
+        # Verify package signature
+        if ! wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -; then
+            echo "Error: Failed to verify package signature"
+            exit 1
+        fi
+
         sudo dpkg -i google-chrome.deb
-        sudo apt-get install -f  # Fix any dependency issues
-        rm google-chrome.deb  # Clean up
+        if [ $? -ne 0 ]; then
+            echo "Resolving dependencies..."
+            sudo apt-get install -f -y || {
+                echo "Error: Failed to install dependencies"
+                exit 1
+            }
+        fi
         echo "Google Chrome has been installed."
     else
         echo "Exiting without installing Google Chrome."
