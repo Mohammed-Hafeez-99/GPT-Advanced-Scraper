@@ -60,8 +60,28 @@ pip3 --version
 echo "Python 3 and pip Which was needed was installed succesfully, Now for convienience...."
 sudo apt install python-is-python3
 
+# Check if requirements.txt exists
+if [ ! -f requirements.txt ]; then
+    echo "Error: requirements.txt not found"
+    exit 1
+fi
+
 echo "Installing necessary Python modules..."
-pip install -r requirements.txt
+pip install -r requirements.txt || {
+    echo "Error: Failed to install Python packages"
+    exit 1
+}
+
+# Check if app.py exists
+if [ ! -f app.py ]; then
+    echo "Error: app.py not found"
+    exit 1
+fi
+
 echo "Running script..."
-python app.py
-read -p "enter the required prompt...."
+python app.py || {
+    echo "Error: Failed to run app.py"
+    exit 1
+}
+
+read -p "Press Enter to exit..."
