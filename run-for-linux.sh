@@ -1,5 +1,22 @@
 #!/bin/bash
-sudo apt update -y
+
+# Check if running on Debian-based system
+if [ ! -f /etc/debian_version ]; then
+    echo "Error: This script requires a Debian-based Linux distribution."
+    exit 1
+fi
+
+# Check if sudo is available
+if ! command -v sudo >/dev/null 2>&1; then
+    echo "Error: This script requires sudo privileges."
+    exit 1
+fi
+
+# Update package list with error handling
+sudo apt update -y || {
+    echo "Error: Failed to update package list. Please check your internet connection."
+    exit 1
+}
 # Function to check if Google Chrome is installed
 check_chrome_installed() {
     if command -v google-chrome &> /dev/null; then
