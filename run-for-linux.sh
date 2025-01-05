@@ -69,14 +69,27 @@ check_chrome_installed || install_chrome
 
 # Install Python 3
 echo "Installing Python 3"
-sudo apt install python3 -y
-python3 --version
-# Install pip for Python 3
-echo "Installing pip for Python 3..."
-sudo apt install python3-pip -y
-pip3 --version
-echo "Python 3 and pip Which was needed was installed succesfully, Now for convienience...."
-sudo apt install python-is-python3
+sudo apt install python3 python3-pip -y || {
+    echo "Error: Failed to install Python 3"
+    exit 1
+}
+
+# Verify minimum Python version
+MIN_PYTHON_VERSION="3.8"
+PYTHON_VERSION=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
+if ! printf '%s\n%s\n' "$MIN_PYTHON_VERSION" "$PYTHON_VERSION" | sort -C -V; then
+    echo "Error: Python version must be >= $MIN_PYTHON_VERSION"
+    exit 1
+fi
+
+echo "Python version: $(python3 --version)"
+echo "Pip version: $(pip3 --version)"
+
+# Optionally install python-is-python3
+read -p "Install python-is-python3 for convenience? (y/n): " install_convenience
+if [[ "$install_convenience" == "y" ]]; then
+    sudo apt install python-is-python3 -y || echo "Warning: Failed to install python-is-python3"
+fi
 
 # Check if requirements.txt exists
 if [ ! -f requirements.txt ]; then
