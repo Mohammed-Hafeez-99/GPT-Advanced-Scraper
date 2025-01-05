@@ -4,7 +4,7 @@ sudo apt update -y
 check_chrome_installed() {
     if command -v google-chrome &> /dev/null; then
         echo "Google Chrome is already installed."
-        exit 0
+        return 0
     else
         echo "Google Chrome is not installed."
         return 1
